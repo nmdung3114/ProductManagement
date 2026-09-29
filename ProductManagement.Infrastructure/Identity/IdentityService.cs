@@ -84,4 +84,9 @@ public class IdentityService : IIdentityService
         if (user == null) return null;
         return (user.FullName, user.Email ?? "");
     }
+
+    public async Task<int> GetTotalUsersCountAsync(CancellationToken cancellationToken = default)
+    {
+        return await _userManager.Users.CountAsync(cancellationToken);
+    }
 }

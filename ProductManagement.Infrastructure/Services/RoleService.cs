@@ -26,22 +26,23 @@ public class RoleService : IRoleService {
             _dbContext=dbContext;
             _cache=cache;
         }
-    //lấy danh sách Permission phân nhóm theo Group
-    public async Task<List<PermissionGroupDto>> GetGroupPermissionAsync(CancellationToken cancellationToken = default){
-        var permissions = await _dbContext.Permissions
-            .AsNoTracking()
-            .OrderBy(p => p.Group)
-            .ThenBy(p=> p.Name)
-            .ToListAsync(cancellationToken);
-        return permissions
-        .GroupBy(p => p.Group ?? "Chung")
-        .Select(g => new PermissionGroupDto(
-            g.Key,
-            g.Select(p => new PermissionDto(p.Id, p.Name, p.Group, p.Description)).ToList()
-        ))
-        .ToList();
-
-    }
+    // Lấy danh sách Permission phân nhóm theo Group từ bảng PermissionGroup
+public async Task<List<PermissionGroupDto>> GetGroupPermissionAsync(CancellationToken cancellationToken = default)
+{
+    var groups = await _dbContext.PermissionGroups
+        .AsNoTracking()
+        .Include(g => g.Permissions)
+        .OrderBy(g => g.DisplayOrder)
+        .ThenBy(g => g.Name)
+        .ToListAsync(cancellationToken);
+    return groups.Select(g => new PermissionGroupDto(
+        g.Name,
+        g.Permissions
+            .OrderBy(p => p.Name)
+            .Select(p => new PermissionDto(p.Id, p.Name, g.Name, p.Description))
+            .ToList()
+    )).ToList();
+}
     // Lấy danh sách tất cả roles
     public async Task<List<RoleDto>> GetRolesAsync(CancellationToken cancellationToken = default){
         var roles = await _dbContext.Roles
@@ -55,7 +56,7 @@ public class RoleService : IRoleService {
                 .Select(rp =>new PermissionDto(
                     rp.Permission.Id,
                     rp.Permission.Name,
-                    rp.Permission.Group,
+                    rp.Permission.PermissionGroup.Name,
                     rp.Permission.Description
                 ))
                 .ToListAsync(cancellationToken);
@@ -81,7 +82,7 @@ public class RoleService : IRoleService {
             .Select(rp => new PermissionDto(
                 rp.Permission.Id,
                 rp.Permission.Name,
-                rp.Permission.Group,
+                rp.Permission.PermissionGroup.Name,
                 rp.Permission.Description))
             .ToListAsync(cancellationToken);
         return new RoleDto(role.Id, role.Name!, role.Description, role.IsSystemRole, perms);

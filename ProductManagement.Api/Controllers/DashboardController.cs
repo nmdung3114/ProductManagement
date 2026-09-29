@@ -1,0 +1,26 @@
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using ProductManagement.Application.Features.Dashboard.GetDashboardStats;
+
+namespace ProductManagement.Api.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+[Authorize]
+public class DashboardController : ControllerBase
+{
+    private readonly IMediator _mediator;
+
+    public DashboardController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
+    [HttpGet("stats")]
+    public async Task<IActionResult> GetStats(CancellationToken cancellationToken = default)
+    {
+        var result = await _mediator.Send(new GetDashboardStatsQuery(), cancellationToken);
+        return Ok(new { success = true, data = result });
+    }
+}

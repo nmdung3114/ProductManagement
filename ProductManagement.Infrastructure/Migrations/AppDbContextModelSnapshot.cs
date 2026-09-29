@@ -277,11 +277,39 @@ namespace ProductManagement.Infrastructure.Migrations
                         .HasColumnType("nvarchar(300)")
                         .HasDefaultValue("");
 
-                    b.Property<string>("Group")
-                        .ValueGeneratedOnAdd()
+                    b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasDefaultValue("");
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("PermissionGroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("PermissionGroupId");
+
+                    b.ToTable("Permissions", (string)null);
+                });
+
+            modelBuilder.Entity("ProductManagement.Domain.Entities.PermissionGroup", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("DisplayOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -293,7 +321,7 @@ namespace ProductManagement.Infrastructure.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Permissions", (string)null);
+                    b.ToTable("PermissionGroups", (string)null);
                 });
 
             modelBuilder.Entity("ProductManagement.Domain.Entities.Product", b =>
@@ -354,12 +382,7 @@ namespace ProductManagement.Infrastructure.Migrations
                     b.Property<Guid>("PermissionId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ApplicationRoleId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("RoleId", "PermissionId");
-
-                    b.HasIndex("ApplicationRoleId");
 
                     b.HasIndex("PermissionId");
 
@@ -559,6 +582,17 @@ namespace ProductManagement.Infrastructure.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("ProductManagement.Domain.Entities.Permission", b =>
+                {
+                    b.HasOne("ProductManagement.Domain.Entities.PermissionGroup", "PermissionGroup")
+                        .WithMany("Permissions")
+                        .HasForeignKey("PermissionGroupId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("PermissionGroup");
+                });
+
             modelBuilder.Entity("ProductManagement.Domain.Entities.Product", b =>
                 {
                     b.HasOne("ProductManagement.Domain.Entities.Category", "Category")
@@ -572,10 +606,6 @@ namespace ProductManagement.Infrastructure.Migrations
 
             modelBuilder.Entity("ProductManagement.Domain.Entities.RolePermission", b =>
                 {
-                    b.HasOne("ProductManagement.Infrastructure.Identity.ApplicationRole", null)
-                        .WithMany("RolePermissions")
-                        .HasForeignKey("ApplicationRoleId");
-
                     b.HasOne("ProductManagement.Domain.Entities.Permission", "Permission")
                         .WithMany("RolePermissions")
                         .HasForeignKey("PermissionId")
@@ -583,7 +613,7 @@ namespace ProductManagement.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("ProductManagement.Infrastructure.Identity.ApplicationRole", null)
-                        .WithMany()
+                        .WithMany("RolePermissions")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -604,6 +634,11 @@ namespace ProductManagement.Infrastructure.Migrations
             modelBuilder.Entity("ProductManagement.Domain.Entities.Permission", b =>
                 {
                     b.Navigation("RolePermissions");
+                });
+
+            modelBuilder.Entity("ProductManagement.Domain.Entities.PermissionGroup", b =>
+                {
+                    b.Navigation("Permissions");
                 });
 
             modelBuilder.Entity("ProductManagement.Domain.Entities.Product", b =>

@@ -98,7 +98,7 @@ public class ProductsController : ControllerBase
         return Ok(new { success = true, message = "Cập nhật sản phẩm thành công." });
     }
 
-    /// <summary>Xóa mềm sản phẩm – chỉ Admin.</summary>
+    /// <summary>Xóa mềm sản phẩm.</summary>
     [HttpDelete("{id:guid}")]
     [Authorize(Policy = Permissions.Product.Delete)]
     public async Task<IActionResult> DeleteProduct(
@@ -107,6 +107,17 @@ public class ProductsController : ControllerBase
     {
         await _mediator.Send(new DeleteProductCommand(id), cancellationToken);
         return Ok(new { success = true, message = "Xóa sản phẩm thành công." });
+    }
+
+    /// <summary>Khôi phục / kích hoạt lại sản phẩm đã xóa mềm.</summary>
+    [HttpPut("{id:guid}/restore")]
+    [Authorize(Policy = Permissions.Product.Update)]
+    public async Task<IActionResult> RestoreProduct(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        await _mediator.Send(new ProductManagement.Application.Features.Products.RestoreProduct.RestoreProductCommand(id), cancellationToken);
+        return Ok(new { success = true, message = "Khôi phục sản phẩm thành công." });
     }
 }
 

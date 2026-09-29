@@ -100,4 +100,14 @@ public class CategoryService : ICategoryService
         category.Deactivate();
         await _context.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task RestoreCategoryAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var category = await _context.Categories
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken)
+            ?? throw new NotFoundException("Danh mục", id);
+
+        category.Activate();
+        await _context.SaveChangesAsync(cancellationToken);
+    }
 }

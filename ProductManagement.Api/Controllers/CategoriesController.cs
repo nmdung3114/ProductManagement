@@ -89,7 +89,7 @@ public class CategoriesController : ControllerBase
         return Ok(new { success = true, message = "Cập nhật danh mục thành công." });
     }
 
-    /// <summary>Xóa mềm danh mục – chỉ Admin.</summary>
+    /// <summary>Xóa mềm danh mục.</summary>
     [HttpDelete("{id:guid}")]
     [Authorize(Policy = Permissions.Category.Delete)]
     public async Task<IActionResult> DeleteCategory(
@@ -98,6 +98,17 @@ public class CategoriesController : ControllerBase
     {
         await _mediator.Send(new DeleteCategoryCommand(id), cancellationToken);
         return Ok(new { success = true, message = "Xóa danh mục thành công." });
+    }
+
+    /// <summary>Khôi phục / kích hoạt lại danh mục đã xóa mềm.</summary>
+    [HttpPut("{id:guid}/restore")]
+    [Authorize(Policy = Permissions.Category.Update)]
+    public async Task<IActionResult> RestoreCategory(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        await _mediator.Send(new ProductManagement.Application.Features.Categories.RestoreCategory.RestoreCategoryCommand(id), cancellationToken);
+        return Ok(new { success = true, message = "Khôi phục danh mục thành công." });
     }
 }
 

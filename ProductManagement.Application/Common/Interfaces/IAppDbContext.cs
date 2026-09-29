@@ -19,6 +19,7 @@ public interface IAppDbContext
     DbSet<Order> Orders { get; }
     DbSet<OrderItem> OrderItems { get; }
     DbSet<Permission> Permissions { get; }
+    DbSet<PermissionGroup> PermissionGroups { get; }
     DbSet<RolePermission> RolePermissions { get; }
     DbSet<AuditLog> AuditLogs { get; }
 

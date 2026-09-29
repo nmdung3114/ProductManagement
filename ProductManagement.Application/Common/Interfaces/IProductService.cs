@@ -52,4 +52,7 @@ public interface IProductService
 
     /// <summary>Xóa mềm sản phẩm (IsActive = false).</summary>
     Task DeleteProductAsync(Guid id, CancellationToken cancellationToken = default);
+
+    /// <summary>Khôi phục / kích hoạt lại sản phẩm (IsActive = true).</summary>
+    Task RestoreProductAsync(Guid id, CancellationToken cancellationToken = default);
 }

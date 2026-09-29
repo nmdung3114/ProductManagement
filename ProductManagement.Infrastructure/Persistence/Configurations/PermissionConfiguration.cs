@@ -17,9 +17,6 @@ public class PermissionConfiguration : IEntityTypeConfiguration<Permission>
         builder.Property(p => p.Name)
             .IsRequired()
             .HasMaxLength(100);
-        builder.Property(p => p.Group)
-            .HasMaxLength(100)
-            .HasDefaultValue(string.Empty);
 
         builder.HasIndex(p => p.Name)
             .IsUnique();
@@ -27,5 +24,10 @@ public class PermissionConfiguration : IEntityTypeConfiguration<Permission>
         builder.Property(p => p.Description)
             .HasMaxLength(300)
             .HasDefaultValue(string.Empty);
+
+        builder.HasOne(p => p.PermissionGroup)
+            .WithMany(pg => pg.Permissions)
+            .HasForeignKey(p => p.PermissionGroupId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

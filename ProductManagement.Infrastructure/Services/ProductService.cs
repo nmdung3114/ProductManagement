@@ -60,6 +60,8 @@ public class ProductService : IProductService
 
         query = (sortBy?.ToLower(), sortDescending) switch
         {
+            ("stock", false)     => query.OrderBy(p => p.Stock),
+            ("stock", true)      => query.OrderByDescending(p => p.Stock),
             ("price", false)     => query.OrderBy(p => p.Price),
             ("price", true)      => query.OrderByDescending(p => p.Price),
             ("name", false)      => query.OrderBy(p => p.Name),
@@ -140,6 +142,16 @@ public class ProductService : IProductService
             ?? throw new NotFoundException("Sản phẩm", id);
 
         product.Deactivate();
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task RestoreProductAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var product = await _context.Products
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken)
+            ?? throw new NotFoundException("Sản phẩm", id);
+
+        product.Activate();
         await _context.SaveChangesAsync(cancellationToken);
     }
 }

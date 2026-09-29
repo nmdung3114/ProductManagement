@@ -10,7 +10,7 @@ public static class Permissions
         public const string Create = "Category.Create";
         public const string Update = "Category.Update";
         public const string Delete = "Category.Delete";
-    }
+    } 
 
     public static class Product
     {
@@ -46,31 +46,31 @@ public static class Permissions
     /// <summary>
     /// Trả về toàn bộ danh sách permission – dùng khi seed DB.
     /// </summary>
-    public static List<(string Name, string Group, string Description)> GetAll() =>
+    public static List<(string Name, string GroupName, string Description)> GetAll() =>
 [
-    (Category.View,   "Danh mục", "Xem danh mục"),
-    (Category.Create, "Danh mục", "Thêm danh mục"),
-    (Category.Update, "Danh mục", "Sửa danh mục"),
-    (Category.Delete, "Danh mục", "Xoá danh mục"),
+    (Category.View,   PermissionGroups.Category, "Xem danh mục"),
+    (Category.Create, PermissionGroups.Category, "Thêm danh mục"),
+    (Category.Update, PermissionGroups.Category, "Sửa danh mục"),
+    (Category.Delete, PermissionGroups.Category, "Xoá danh mục"),
     
-    (Product.View,   "Sản phẩm", "Xem sản phẩm"),
-    (Product.Create, "Sản phẩm", "Thêm sản phẩm"),
-    (Product.Update, "Sản phẩm", "Sửa sản phẩm"),
-    (Product.Delete, "Sản phẩm", "Xoá sản phẩm"),
+    (Product.View,   PermissionGroups.Product, "Xem sản phẩm"),
+    (Product.Create, PermissionGroups.Product, "Thêm sản phẩm"),
+    (Product.Update, PermissionGroups.Product, "Sửa sản phẩm"),
+    (Product.Delete, PermissionGroups.Product, "Xoá sản phẩm"),
     
-    (Order.View,         "Đơn hàng", "Xem đơn hàng"),
-    (Order.Create,       "Đơn hàng", "Tạo đơn hàng"),
-    (Order.UpdateStatus, "Đơn hàng", "Cập nhật trạng thái đơn hàng"),
+    (Order.View,         PermissionGroups.Order, "Xem đơn hàng"),
+    (Order.Create,       PermissionGroups.Order, "Tạo đơn hàng"),
+    (Order.UpdateStatus, PermissionGroups.Order, "Cập nhật trạng thái đơn hàng"),
     
-    (User.View,          "Người dùng", "Xem người dùng"),
-    (User.ManageRole,    "Người dùng", "Gán vai trò cho người dùng"),
-    (User.ManageStatus,  "Người dùng", "Khoá/mở tài khoản người dùng"),
-    (User.ResetPassword, "Người dùng", "Đặt lại mật khẩu người dùng"),
+    (User.View,          PermissionGroups.User, "Xem người dùng"),
+    (User.ManageRole,    PermissionGroups.User, "Gán vai trò cho người dùng"),
+    (User.ManageStatus,  PermissionGroups.User, "Khoá/mở tài khoản người dùng"),
+    (User.ResetPassword, PermissionGroups.User, "Đặt lại mật khẩu người dùng"),
 
-    (Role.View,   "Vai trò & Quyền", "Xem danh sách vai trò"),
-    (Role.Create, "Vai trò & Quyền", "Tạo vai trò mới"),
-    (Role.Update, "Vai trò & Quyền", "Sửa vai trò & Phân quyền"),
-    (Role.Delete, "Vai trò & Quyền", "Xoá vai trò"),
+    (Role.View,   PermissionGroups.Role, "Xem danh sách vai trò"),
+    (Role.Create, PermissionGroups.Role, "Tạo vai trò mới"),
+    (Role.Update, PermissionGroups.Role, "Sửa vai trò & Phân quyền"),
+    (Role.Delete, PermissionGroups.Role, "Xoá vai trò"),
 ];
 }
 

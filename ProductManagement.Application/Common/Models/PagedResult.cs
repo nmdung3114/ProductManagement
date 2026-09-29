@@ -1,9 +1,4 @@
-// ============================================================
-// File: PagedResult.cs – Tầng Application / Common / Models
-// Vai trò: Generic model dùng để bọc kết quả phân trang cho
-// tất cả các query. Chứa dữ liệu + metadata phân trang
-// (tổng bản ghi, tổng số trang, trang hiện tại, kích thước trang).
-// ============================================================
+
 
 namespace ProductManagement.Application.Common.Models;
 

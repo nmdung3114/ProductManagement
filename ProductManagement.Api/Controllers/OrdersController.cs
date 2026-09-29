@@ -38,10 +38,10 @@ public class OrdersController : ControllerBase
 
     // Helper: Kiểm tra người dùng hiện tại có phải Admin không
     private bool IsAdmin() => User.IsInRole(Roles.Admin)
-                              || User.HasClaim(ClaimTypes.Role, Roles.Admin)
-                              || User.HasClaim("role", Roles.Admin);
+                           || User.HasClaim(ClaimTypes.Role, Roles.Admin)
+                           || User.HasClaim("role", Roles.Admin);
 
-    /// <summary>Tạo đơn hàng mới – tất cả đã đăng nhập.</summary>
+    /// <summary>Tạo đơn hàng mới – tất cả đã đăng nhập (Customer & SalesStaff).</summary>
     [HttpPost]
     public async Task<IActionResult> CreateOrder(
         [FromBody] CreateOrderRequest request,
@@ -85,7 +85,10 @@ public class OrdersController : ControllerBase
         });
     }
 
-    /// <summary>Xem tất cả đơn hàng – chỉ Admin.</summary>
+    /// <summary>
+    /// Xem tất cả đơn hàng – Admin, SalesStaff, InventoryManager, Auditor.
+    /// Mỗi role nhận DTO khác nhau (handler xử lý data scope & mapping).
+    /// </summary>
     [HttpGet]
     [Authorize(Policy = Permissions.Order.View)]
     public async Task<IActionResult> GetAllOrders(
@@ -117,7 +120,11 @@ public class OrdersController : ControllerBase
         });
     }
 
-    /// <summary>Xem chi tiết đơn hàng – Admin xem tất cả, User chỉ xem của mình.</summary>
+    /// <summary>
+    /// Xem chi tiết đơn hàng.
+    /// Admin xem full DTO; SalesStaff/Auditor/InventoryManager xem DTO không có thông tin nhạy cảm;
+    /// Customer chỉ xem đơn của mình.
+    /// </summary>
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetOrderById(
         Guid id,
@@ -133,13 +140,14 @@ public class OrdersController : ControllerBase
         return Ok(new { success = true, data = result });
     }
 
-    /// <summary>Cập nhật trạng thái đơn hàng.</summary>
-    /// <remarks>
+    /// <summary>
+    /// Cập nhật trạng thái đơn hàng.
     /// Admin: Confirm, Complete, Cancel.
-    /// User: chỉ Cancel đơn của mình khi còn Pending.
-    /// </remarks>
+    /// SalesStaff & InventoryManager: Confirm, Complete, Cancel (handler kiểm soát logic chi tiết).
+    /// Customer: chỉ Cancel đơn của mình khi còn Pending.
+    /// </summary>
     [HttpPatch("{id:guid}/status")]
-    [Authorize(Policy = "Order.UpdateStatus")]
+    [Authorize(Policy = Permissions.Order.UpdateStatus)]
     public async Task<IActionResult> UpdateOrderStatus(
         Guid id,
         [FromBody] UpdateOrderStatusRequest request,

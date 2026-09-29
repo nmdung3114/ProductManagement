@@ -31,4 +31,7 @@ public interface ICategoryService
 
     /// <summary>Xóa mềm danh mục (IsActive = false).</summary>
     Task DeleteCategoryAsync(Guid id, CancellationToken cancellationToken = default);
+
+    /// <summary>Khôi phục / kích hoạt lại danh mục (IsActive = true).</summary>
+    Task RestoreCategoryAsync(Guid id, CancellationToken cancellationToken = default);
 }

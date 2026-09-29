@@ -134,20 +134,18 @@ public class OrderService : IOrderService
         CancellationToken cancellationToken = default)
     {
         var order = await _context.Orders
+            .Include(o => o.Items)
+                .ThenInclude(i => i.Product)
             .FirstOrDefaultAsync(o => o.Id == orderId, cancellationToken)
             ?? throw new NotFoundException("Đơn hàng", orderId);
 
         switch (action)
         {
             case OrderAction.Confirm:
-                if (!isAdmin)
-                    throw new ForbiddenException("Chỉ Admin mới được xác nhận đơn hàng.");
                 order.ConfirmOrder();
                 break;
 
             case OrderAction.Complete:
-                if (!isAdmin)
-                    throw new ForbiddenException("Chỉ Admin mới được hoàn thành đơn hàng.");
                 order.CompleteOrder();
                 break;
 

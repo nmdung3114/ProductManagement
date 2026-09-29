@@ -12,6 +12,7 @@ public interface IIdentityService
     Task<LoginResult> LoginAsync(string email, string password, CancellationToken cancellationToken=default);
     Task<Dictionary<Guid, (string FullName, string Email)>> GetUsersSummaryAsync(IEnumerable<Guid> userIds, CancellationToken cancellationToken = default);
     Task<(string FullName, string Email)?> GetUserSummaryAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<int> GetTotalUsersCountAsync(CancellationToken cancellationToken = default);
 }
 
 public record RegisterResult(

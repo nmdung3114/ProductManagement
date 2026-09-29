@@ -17,7 +17,7 @@ public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissi
 
         // FK tới AspNetRoles
         builder.HasOne<ApplicationRole>()
-            .WithMany()
+            .WithMany(r => r.RolePermissions)
             .HasForeignKey(rp => rp.RoleId)
             .OnDelete(DeleteBehavior.Cascade);
 
