@@ -1,9 +1,4 @@
-// ============================================================
-// File: OrderConfiguration.cs – Infrastructure / Persistence / Configurations
-// Vai trò: Cấu hình mapping EF Core cho Order entity.
-// Quan trọng: dùng PropertyAccessMode.Field để truy cập
-// _items (private field) thay vì Items property.
-// ============================================================
+
 
 namespace ProductManagement.Infrastructure.Persistence.Configurations;
 

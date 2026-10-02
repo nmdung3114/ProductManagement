@@ -180,7 +180,7 @@ export default function DashboardPage() {
             Bảng Điều Khiển Hệ Thống
           </h1>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-            Tổng quan thời gian thực về sản phẩm, danh mục, đơn hàng & phân quyền RBAC
+            Tổng quan  về sản phẩm, danh mục, đơn hàng và vai trò
           </p>
         </div>
 

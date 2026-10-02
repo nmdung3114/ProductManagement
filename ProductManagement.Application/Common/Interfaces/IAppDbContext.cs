@@ -22,6 +22,6 @@ public interface IAppDbContext
     DbSet<PermissionGroup> PermissionGroups { get; }
     DbSet<RolePermission> RolePermissions { get; }
     DbSet<AuditLog> AuditLogs { get; }
-
+    DbSet<RefreshToken> RefreshTokens { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

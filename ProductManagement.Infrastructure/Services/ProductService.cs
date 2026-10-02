@@ -1,8 +1,4 @@
-// ============================================================
-// File: ProductService.cs – Tầng Infrastructure / Services
-// Vai trò: Triển khai IProductService. Tương tác trực tiếp với
-// AppDbContext để xử lý logic và truy vấn dữ liệu sản phẩm.
-// ============================================================
+
 
 using Microsoft.EntityFrameworkCore;
 using ProductManagement.Application.Common.Exceptions;
@@ -60,15 +56,15 @@ public class ProductService : IProductService
 
         query = (sortBy?.ToLower(), sortDescending) switch
         {
-            ("stock", false)     => query.OrderBy(p => p.Stock),
-            ("stock", true)      => query.OrderByDescending(p => p.Stock),
-            ("price", false)     => query.OrderBy(p => p.Price),
-            ("price", true)      => query.OrderByDescending(p => p.Price),
-            ("name", false)      => query.OrderBy(p => p.Name),
-            ("name", true)       => query.OrderByDescending(p => p.Name),
+            ("stock", false) => query.OrderBy(p => p.Stock),
+            ("stock", true) => query.OrderByDescending(p => p.Stock),
+            ("price", false) => query.OrderBy(p => p.Price),
+            ("price", true) => query.OrderByDescending(p => p.Price),
+            ("name", false) => query.OrderBy(p => p.Name),
+            ("name", true) => query.OrderByDescending(p => p.Name),
             ("createdat", false) => query.OrderBy(p => p.CreatedAt),
-            ("createdat", true)  => query.OrderByDescending(p => p.CreatedAt),
-            _                    => query.OrderByDescending(p => p.CreatedAt)
+            ("createdat", true) => query.OrderByDescending(p => p.CreatedAt),
+            _ => query.OrderByDescending(p => p.CreatedAt)
         };
 
         return await PagedResult<Product>.CreateAsync(query, page, pageSize, cancellationToken);

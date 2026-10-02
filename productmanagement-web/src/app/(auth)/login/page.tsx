@@ -5,6 +5,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { GoogleLogin } from "@react-oauth/google";
+
 import {
   Boxes,
   ArrowRight,
@@ -17,7 +19,7 @@ import {
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -54,11 +56,11 @@ export default function LoginPage() {
           </div>
 
           <h1 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-            Đăng nhập Admin Panel
+            Đăng nhập
           </h1>
 
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            Hệ thống Quản lý Sản phẩm & Phân quyền RBAC
+            Hệ thống Quản lý Sản phẩm 
           </p>
         </div>
 
@@ -147,6 +149,44 @@ export default function LoginPage() {
 
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
+                      {/* Đường phân cách */}
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-zinc-200 dark:border-zinc-800" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white dark:bg-zinc-900 px-2 text-zinc-400 font-medium">
+                Hoặc
+              </span>
+            </div>
+          </div>
+
+          {/* Nút Đăng nhập bằng Google chính thức */}
+          <div className="flex justify-center w-full">
+            <GoogleLogin
+              onSuccess={async (credentialResponse) => {
+                if (credentialResponse.credential) {
+                  try {
+                    setIsSubmitting(true);
+                    await loginWithGoogle(credentialResponse.credential);
+                    router.push("/dashboard");
+                  } catch (err: any) {
+                    setError(err.message || "Đăng nhập bằng Google thất bại.");
+                  } finally {
+                    setIsSubmitting(false);
+                  }
+                }
+              }}
+              onError={() => {
+                setError("Đăng nhập bằng Google không thành công. Vui lòng thử lại.");
+              }}
+              theme="outline"
+              size="large"
+              width="100%"
+              text="continue_with"
+            />
+          </div>
+
           </form>
         </div>
 

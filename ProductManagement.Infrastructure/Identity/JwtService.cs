@@ -1,16 +1,7 @@
-// ============================================================
-// File: JwtService.cs – Tầng Infrastructure / Identity
-// Vai trò: Implement IJwtService – tạo JWT token chứa các claims:
-//   - sub (JwtRegisteredClaimNames.Sub): UserId
-//   - email: địa chỉ email
-//   - ClaimTypes.NameIdentifier: UserId (để Controller dùng FindFirstValue)
-//   - ClaimTypes.Role: danh sách roles
-//   - jti: unique token id (chống replay attack)
-// Token được ký bằng HMAC-SHA256 với secret key từ appsettings.
-// ============================================================
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -72,5 +63,13 @@ public class JwtService : IJwtService
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public string GenerateRefreshToken(){
+        var randomBytes = new byte[64];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomBytes);
+        return Convert.ToBase64String(randomBytes);
+
     }
 }

@@ -29,6 +29,7 @@ export interface Role {
 export interface AuthResponse {
   message: string;
   token: string;
+  refreshToken: string;
   expiresAt: string;
   user: User;
 }

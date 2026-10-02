@@ -9,7 +9,9 @@ using ProductManagement.Infrastructure.Identity;
 using ProductManagement.Infrastructure.Persistence;
 
 namespace ProductManagement.Infrastructure.Services;
-public class RoleService : IRoleService {
+
+public class RoleService : IRoleService
+{
     private readonly RoleManager<ApplicationRole> _roleManager;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly AppDbContext _dbContext;
@@ -20,40 +22,43 @@ public class RoleService : IRoleService {
         UserManager<ApplicationUser> userManager,
         AppDbContext dbContext,
         IMemoryCache cache
-        ){
-            _roleManager=roleManager;
-            _userManager=userManager;
-            _dbContext=dbContext;
-            _cache=cache;
-        }
+        )
+    {
+        _roleManager = roleManager;
+        _userManager = userManager;
+        _dbContext = dbContext;
+        _cache = cache;
+    }
     // Lấy danh sách Permission phân nhóm theo Group từ bảng PermissionGroup
-public async Task<List<PermissionGroupDto>> GetGroupPermissionAsync(CancellationToken cancellationToken = default)
-{
-    var groups = await _dbContext.PermissionGroups
-        .AsNoTracking()
-        .Include(g => g.Permissions)
-        .OrderBy(g => g.DisplayOrder)
-        .ThenBy(g => g.Name)
-        .ToListAsync(cancellationToken);
-    return groups.Select(g => new PermissionGroupDto(
-        g.Name,
-        g.Permissions
-            .OrderBy(p => p.Name)
-            .Select(p => new PermissionDto(p.Id, p.Name, g.Name, p.Description))
-            .ToList()
-    )).ToList();
-}
+    public async Task<List<PermissionGroupDto>> GetGroupPermissionAsync(CancellationToken cancellationToken = default)
+    {
+        var groups = await _dbContext.PermissionGroups
+            .AsNoTracking()
+            .Include(g => g.Permissions)
+            .OrderBy(g => g.DisplayOrder)
+            .ThenBy(g => g.Name)
+            .ToListAsync(cancellationToken);
+        return groups.Select(g => new PermissionGroupDto(
+            g.Name,
+            g.Permissions
+                .OrderBy(p => p.Name)
+                .Select(p => new PermissionDto(p.Id, p.Name, g.Name, p.Description))
+                .ToList()
+        )).ToList();
+    }
     // Lấy danh sách tất cả roles
-    public async Task<List<RoleDto>> GetRolesAsync(CancellationToken cancellationToken = default){
+    public async Task<List<RoleDto>> GetRolesAsync(CancellationToken cancellationToken = default)
+    {
         var roles = await _dbContext.Roles
             .AsNoTracking()
             .OrderBy(r => r.Name)
             .ToListAsync(cancellationToken);
-        var result =new List<RoleDto>();
-        foreach(var role in roles){
-            var perms =await _dbContext.RolePermissions
+        var result = new List<RoleDto>();
+        foreach (var role in roles)
+        {
+            var perms = await _dbContext.RolePermissions
                 .Where(rp => rp.RoleId == role.Id)
-                .Select(rp =>new PermissionDto(
+                .Select(rp => new PermissionDto(
                     rp.Permission.Id,
                     rp.Permission.Name,
                     rp.Permission.PermissionGroup.Name,
@@ -66,9 +71,9 @@ public async Task<List<PermissionGroupDto>> GetGroupPermissionAsync(Cancellation
                 role.Description,
                 role.IsSystemRole,
                 perms
-                
+
             ));
-            
+
         }
         return result;
     }
@@ -90,66 +95,78 @@ public async Task<List<PermissionGroupDto>> GetGroupPermissionAsync(Cancellation
 
 
     //tao role mới
-    public async Task<Guid> CreateRoleAsync(string name,string? description,CancellationToken cancellationToken=default){
-        if(await _roleManager.RoleExistsAsync(name)){
+    public async Task<Guid> CreateRoleAsync(string name, string? description, CancellationToken cancellationToken = default)
+    {
+        if (await _roleManager.RoleExistsAsync(name))
+        {
             throw new InvalidOperationException("Role đã tồn tại");
         }
-        var role=new ApplicationRole{
-            Name=name,
-            Description=description,
-            IsSystemRole=false,
-            CreatedAt=DateTime.UtcNow
+        var role = new ApplicationRole
+        {
+            Name = name,
+            Description = description,
+            IsSystemRole = false,
+            CreatedAt = DateTime.UtcNow
         };
-        var result=await _roleManager.CreateAsync(role);
-        if(!result.Succeeded){
+        var result = await _roleManager.CreateAsync(role);
+        if (!result.Succeeded)
+        {
             throw new InvalidOperationException(string.Join(", ", result.Errors.Select(e => e.Description)));
         }
         return role.Id;
     }
     // cập nhật danh sách permissions cho role
-    public async Task UpdateRolePermissionAsync(Guid roleId, List<Guid> permissionIds, CancellationToken cancellationToken=default){
-        var role = await _roleManager.FindByIdAsync(roleId.ToString())?? throw new NotFoundException("Role",roleId);
+    public async Task UpdateRolePermissionAsync(Guid roleId, List<Guid> permissionIds, CancellationToken cancellationToken = default)
+    {
+        var role = await _roleManager.FindByIdAsync(roleId.ToString()) ?? throw new NotFoundException("Role", roleId);
         //xóa các permission cũ trong role
         var oldRolePermission = await _dbContext.RolePermissions
-            .Where(rp => rp.RoleId==roleId)
+            .Where(rp => rp.RoleId == roleId)
             .ToListAsync(cancellationToken);
         _dbContext.RolePermissions.RemoveRange(oldRolePermission);
         //thêm các permission mới
-        foreach(var perms in permissionIds)
+        foreach (var perms in permissionIds)
         {
-            _dbContext.RolePermissions.Add(new RolePermission{
-                RoleId=roleId,
-                PermissionId=perms,
-                
+            _dbContext.RolePermissions.Add(new RolePermission
+            {
+                RoleId = roleId,
+                PermissionId = perms,
+
             });
         }
         await _dbContext.SaveChangesAsync(cancellationToken);
         // xóa cache phân quyền để quyền mới có hiệu lực tức thì
-        if(_cache is MemoryCache memoryCache){
+        if (_cache is MemoryCache memoryCache)
+        {
             memoryCache.Clear();
-            
+
         }
     }
     // xóa role
-    public async Task DeleteRoleAsync(Guid roleId, CancellationToken cancellationToken=default){
-        var role =await _roleManager.FindByIdAsync(roleId.ToString()) ??throw new NotFoundException("Role",roleId);
-        if(role.IsSystemRole){
+    public async Task DeleteRoleAsync(Guid roleId, CancellationToken cancellationToken = default)
+    {
+        var role = await _roleManager.FindByIdAsync(roleId.ToString()) ?? throw new NotFoundException("Role", roleId);
+        if (role.IsSystemRole)
+        {
             throw new InvalidOperationException("Không được xóa system role");
         }
         //kiểm tra role có đang được gán cho user nào không
         var usersInRole = await _userManager.GetUsersInRoleAsync(role.Name!);
-        if(usersInRole.Count > 0){
+        if (usersInRole.Count > 0)
+        {
             throw new InvalidOperationException("Role đang được gán cho user nên không thể xóa");
         }
-        var result=await _roleManager.DeleteAsync(role);
-        if(!result.Succeeded){
+        var result = await _roleManager.DeleteAsync(role);
+        if (!result.Succeeded)
+        {
             throw new InvalidOperationException(string.Join(", ", result.Errors.Select(e => e.Description)));
         }
         //xóa cache
-        if(_cache is MemoryCache memoryCache){
+        if (_cache is MemoryCache memoryCache)
+        {
             memoryCache.Clear();
         }
     }
-    
-        
+
+
 }

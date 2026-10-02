@@ -155,35 +155,7 @@ export function Sidebar({
           })}
         </div>
 
-        {/* User Info & Logout */}
-        {!isCollapsed && user && (
-          <div className="border-t border-zinc-200 dark:border-zinc-800 p-3 space-y-2">
-            {/* Role Badge */}
-            <div className="px-2">
-              {(user.roles ?? []).map((role) => (
-                <span
-                  key={role}
-                  className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold border mr-1 ${getRoleBadgeClassLocal(role)}`}
-                >
-                  {getRoleLabelLocal(role)}
-                </span>
-              ))}
-            </div>
-            {/* User name */}
-            <div className="px-2">
-              <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">{user.fullName}</p>
-              <p className="text-[11px] text-zinc-400 truncate">{user.email}</p>
-            </div>
-            {/* Logout */}
-            <button
-              onClick={logout}
-              className="w-full flex items-center gap-2 px-3 py-2 text-xs text-zinc-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-md transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-              <span>Đăng xuất</span>
-            </button>
-          </div>
-        )}
+        
 
         {/* Collapsed: chỉ hiện Logout icon */}
         {isCollapsed && (

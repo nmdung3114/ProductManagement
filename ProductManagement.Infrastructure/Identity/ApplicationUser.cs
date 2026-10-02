@@ -11,6 +11,4 @@ public class ApplicationUser : IdentityUser<Guid>
 
     // Navigation property tới danh sách đơn hàng
     public ICollection<Order> Orders { get; set; } = new List<Order>();
-    // Lưu ý: AuditLog.UserId là string thuần (không phải FK thật),
-    // nên KHAI BÁO navigation property ở đây sẽ khiến EF Core tự tạo shadow FK sai.
 }

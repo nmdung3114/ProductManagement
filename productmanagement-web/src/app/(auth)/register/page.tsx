@@ -78,9 +78,7 @@ export default function RegisterPage() {
             Tạo tài khoản mới
           </h1>
 
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            Tham gia hệ thống ProductManagement
-          </p>
+          
         </div>
 
         {/* Card */}
